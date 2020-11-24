@@ -3,6 +3,13 @@ import pygame as pg
 import gui.constants as c
 
 
+def get_color_by_code(code):
+    if code == 0:
+        return Color.BOX
+    elif code == 1:
+        return Color.WALL
+
+
 class MazeHandler:
     def __init__(self, screen, maze):
         self.screen = screen
@@ -28,11 +35,13 @@ class MazeHandler:
             box[2] = color_code
             self._draw_maze_box(box[0], box[1], color_code)
 
+
     def draw_box_line(self, pos, color_code, rel_pos):
         x, y = pos
         x, y = x - c.MAZE_LOC[0], y - c.MAZE_LOC[1]
         rx, ry = rel_pos
 
+        # TODO implement line checking
         if x > y:
             ax = rx / ry
             for yy in range(y):
@@ -49,7 +58,7 @@ class MazeHandler:
         :return: None
         """
         pg.draw.rect(self.screen, Color.BOX_BORDER, (x, y, c.BOX_SIZE, c.BOX_SIZE))
-        pg.draw.rect(self.screen, self.get_color_by_code(color_code), (x + 1, y + 1, c.BOX_SIZE - 2, c.BOX_SIZE - 2))
+        pg.draw.rect(self.screen, get_color_by_code(color_code), (x + 1, y + 1, c.BOX_SIZE - 2, c.BOX_SIZE - 2))
 
     def draw_maze(self):
         """
@@ -58,9 +67,3 @@ class MazeHandler:
         """
         for box in self.maze:
             self._draw_maze_box(box[0], box[1], box[2])
-
-    def get_color_by_code(self, code):
-        if code == 0:
-            return Color.BOX
-        elif code == 1:
-            return Color.WALL
