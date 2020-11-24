@@ -11,6 +11,11 @@ class MazeHandler:
         self.box_width = c.WIDTH // c.BOX_SIZE
 
     def _get_box_by_pos(self, pos):
+        """
+        Get the box object by a given position tuple
+        :param pos: position tuple on the form (x,y)
+        :return: box object (list on the form [x, y, color_code])
+        """
         if pos[0] <= c.MAZE_LOC[0] or pos[0] >= c.MAZE_LOC[0] + c.WIDTH or pos[1] <= c.MAZE_LOC[1] or pos[1] >= c.MAZE_LOC[1] + c.HEIGHT:
             return None
         x = (pos[0] - c.MAZE_LOC[0]) // c.BOX_SIZE
