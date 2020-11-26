@@ -7,5 +7,5 @@ TICK = 60           # Number of updates performed per second
 
 PADX = 4            # Global padding in the y direction
 PADY = 4            # Global padding in the x direction
-BOX_SIZE = 10        # Size of each individual box representing the maze
+BOX_SIZE = 20       # Size of each individual box representing the maze
 BORDER_SIZE = 2     # Thickness of the application borders

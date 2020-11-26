@@ -5,10 +5,7 @@ from gui.colors import Color
 
 
 def get_color_by_code(code):
-    if code == 0:
-        return Color.BOX
-    elif code == 1:
-        return Color.WALL
+    return Color.colors.get(code, Color.WALL)
 
 
 def get_direction(initial_pos, new_pos):
@@ -17,7 +14,7 @@ def get_direction(initial_pos, new_pos):
     rel_pos: relative position obtain from MOUSEMOTION event.
     :param initial_pos initial position when user pressed shift.
     :param new_pos current cursor position.
-    
+
     :return: tuple containing direction, e.g (-1, 0, 242) means we are moving west, and starting x coordinate
     is 242, (0, 1, 148) is north and starting y coordinate is 148.
     """
@@ -33,10 +30,19 @@ def get_direction(initial_pos, new_pos):
 
 
 class MazeHandler:
-    def __init__(self, screen, maze):
+    def __init__(self, screen, maze, endpoints):
+        """
+        Initialize the maze handler
+        :param screen: pygame screen object
+        :param maze: maze list
+        :param endpoints: tuple containing start and end coordinates for the maze
+        """
         self.screen = screen
         self.maze = maze
-        self._draw_maze_box(c.MAZE_LOC[0], c.MAZE_LOC[1], 0)
+
+        self._endpoints = endpoints
+        self.__endpoint_lock = False  # Signifies weather the user can draw over the start/endpoint or not
+
         self.box_width = c.WIDTH // c.BOX_SIZE
         self.__locked = False
 
@@ -60,6 +66,31 @@ class MazeHandler:
         :return: true if locked false otherwise
         """
         return self.__locked
+
+    def _draw_maze_box(self, x, y, color_code):
+        """
+        Draw a box to a screen.
+        :param x: x coordinate of the box
+        :param y: y coordinate of the box
+        :param color_code: color code determining what color the box should be
+        :return: None
+        """
+        #  We are only allowed do draw over endpoint boxes if endpoint lock is false
+        if (x, y) not in self._endpoints or not self.__endpoint_lock:
+            pg.draw.rect(self.screen, Color.BOX_BORDER, (x, y, c.BOX_SIZE, c.BOX_SIZE))
+            pg.draw.rect(self.screen, get_color_by_code(color_code), (x + 1, y + 1, c.BOX_SIZE - 2, c.BOX_SIZE - 2))
+
+    def draw_box_by_pos(self, pos, color_code):
+        """
+        Draws a box to the screen
+        :param pos: (x,y) tuple containing position of the box
+        :param color_code: see get_color_by_code, integer representing what color the box should be
+        :return: None
+        """
+        box = self._get_box_by_pos(pos)
+        if box:
+            box[2] = color_code
+            self._draw_maze_box(box[0], box[1], color_code)
 
     def _get_box_by_pos(self, pos):
         """
@@ -86,18 +117,6 @@ class MazeHandler:
         x //= c.BOX_SIZE
         y //= c.BOX_SIZE
         return self.maze[self.box_width * y + x]
-
-    def draw_box_by_pos(self, pos, color_code):
-        """
-        Draws a box to the screen
-        :param pos: (x,y) tuple containing position of the box
-        :param color_code: see get_color_by_code, integer representing what color the box should be
-        :return: None
-        """
-        box = self._get_box_by_pos(pos)
-        if box:
-            box[2] = color_code
-            self._draw_maze_box(box[0], box[1], color_code)
 
     def draw_straight_line(self, original_direction, pos, rel_pos, color_code):
         """
@@ -183,17 +202,6 @@ class MazeHandler:
                     self._draw_maze_box(box[0], box[1], color_code)
                 yy += ay
 
-    def _draw_maze_box(self, x, y, color_code):
-        """
-        Draw a box to a screen.
-        :param x: x coordinate of the box
-        :param y: y coordinate of the box
-        :param color_code: color code determining what color the box should be
-        :return: None
-        """
-        pg.draw.rect(self.screen, Color.BOX_BORDER, (x, y, c.BOX_SIZE, c.BOX_SIZE))
-        pg.draw.rect(self.screen, get_color_by_code(color_code), (x + 1, y + 1, c.BOX_SIZE - 2, c.BOX_SIZE - 2))
-
     def draw_maze(self):
         """
         Draw the maze to the screen based on the values in the maze list.
@@ -201,3 +209,5 @@ class MazeHandler:
         """
         for box in self.maze:
             self._draw_maze_box(box[0], box[1], box[2])
+
+        self.__endpoint_lock = True

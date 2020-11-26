@@ -1,8 +1,9 @@
 import pygame as pg
 
 import gui.constants as c
+from core.maze.maze_builder import MazeBuilder
 from gui.colors import Color
-from gui.maze_handler import MazeHandler
+from gui.maze_handler import MazeHandler, get_direction
 
 
 def run(screen, clock):
@@ -12,14 +13,21 @@ def run(screen, clock):
     :param clock: pugame clock object
     :return: None
     """
-    maze = initialize_maze()
-    maze_handler = MazeHandler(screen, maze)
+    maze_builder = MazeBuilder()
+    maze = maze_builder.get_maze()
+    maze_handler = MazeHandler(screen, maze, maze_builder.get_endpoints())
     maze_handler.draw_maze()
+    color_maze = maze_builder.generate_random_maze()
+
+    # for i in range(len(maze)):
+    #    maze[i][2] = color_maze[i]
+    # maze_handler.draw_maze()
 
     line_direction = None
     initial_shift_pos = None
     pressed_keys = {"shift": False}
 
+    # Application main loop
     while c.running:
         clock.tick(c.TICK)
 
@@ -62,19 +70,11 @@ def run(screen, clock):
                         elif event.buttons[2] == 1:
                             maze_handler.draw_box_line(event.pos, event.rel, 0)
 
+        maze[next(color_maze, 0)][2] = 0
+        maze_handler.draw_maze()
         pg.display.update()
 
     pg.quit()
-
-
-def initialize_maze():
-    """
-    Creates a 2d list where each element in the list contains its x and y position, along with its current color code
-    which signifies what color it should be. => Each element in the list is on the form [x, y, color]
-    :return: None
-    """
-    return [[x + c.MAZE_LOC[0], y + c.MAZE_LOC[1], 0] for y in range(0, c.HEIGHT, c.BOX_SIZE) for x in
-            range(0, c.WIDTH, c.BOX_SIZE)]
 
 
 if __name__ == '__main__':
