@@ -39,6 +39,9 @@ def run(screen, clock):
                 if (event.key == pg.K_LSHIFT or event.key == pg.K_RSHIFT) and not initial_shift_pos:
                     pressed_keys["shift"] = True
                     initial_shift_pos = pg.mouse.get_pos()
+                if event.key == pg.K_RETURN:
+                    maze[next(color_maze, -1)][2] = 0
+                    maze_handler.draw_maze()
 
             elif event.type == pg.KEYUP:
                 if event.key == pg.K_LSHIFT or event.key == pg.K_RSHIFT:
