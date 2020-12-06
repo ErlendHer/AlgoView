@@ -79,6 +79,9 @@ def run(screen, clock):
 
 if __name__ == '__main__':
     pg.init()
+
+    # Load config.yml and initialize constants
+    c.load_config()
     screen_info = pg.display.Info()
 
     # Get the width and the height of the active screen

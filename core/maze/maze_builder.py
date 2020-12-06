@@ -73,8 +73,7 @@ class MazeBuilder:
 
     def process_neighbour(self, ci, ni, maze, visited, stack):
         if ci - ni == 1:  # Going west
-            if ci + self._box_width < self._size and maze[ni + self._box_width] <= 0 and maze[
-                ci + self._box_width] <= 0:
+            if ci + self._box_width < self._size and maze[ni + self._box_width] <= 0 and maze[ci + self._box_width] <= 0:
                 visited[ni] = True
                 maze[ni] = 1
             elif ci - self._box_width >= 0 and maze[ni - self._box_width] <= 0 and maze[ci - self._box_width] <= 0:
@@ -83,8 +82,7 @@ class MazeBuilder:
             else:
                 stack.append(ni)
         elif ci - ni == -1:  # Going east
-            if ni + self._box_width < self._size and maze[ni + self._box_width] <= 0 and maze[
-                ci + self._box_width] <= 0:
+            if ni + self._box_width < self._size and maze[ni + self._box_width] <= 0 and maze[ci + self._box_width] <= 0:
                 visited[ni] = True
                 maze[ni] = 1
             elif ni - self._box_width >= 0 and maze[ni - self._box_width] <= 0 and maze[ci - self._box_width] <= 0:
@@ -121,12 +119,12 @@ class MazeBuilder:
 
         while len(stack) != 0:
             cur = stack.pop()
-            # print(cur)
             if not visited[cur]:
                 maze[cur] = 0
                 yield cur
 
             neighbours = self.get_unvisited_neighbours(cur, visited)
+            print(neighbours)
 
             shuffle(neighbours)
             for n in neighbours:
