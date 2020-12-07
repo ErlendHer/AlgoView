@@ -5,7 +5,7 @@ from random import shuffle, randint
 import gui.constants as c
 
 # Uncomment to replicate random maze generations
-# random.seed(2)
+# random.seed(17)
 
 
 class MazeBuilder:
@@ -35,9 +35,10 @@ class MazeBuilder:
         """
         Creates a 2d list where each element in the list contains its x and y position, along with its current color
         code which signifies what color it should be. => Each element in the list is on the form [x, y, color]
+
         :return: None
         """
-        self._maze = [[x + c.MAZE_LOC[0], y + c.MAZE_LOC[1], 1] for y in range(0, c.HEIGHT, c.BOX_SIZE) for x in
+        self._maze = [[x + c.MAZE_LOC[0], y + c.MAZE_LOC[1], 0] for y in range(0, c.HEIGHT, c.BOX_SIZE) for x in
                       range(0, c.WIDTH, c.BOX_SIZE)]
 
         self._size = len(self._maze)
@@ -98,7 +99,7 @@ class MazeBuilder:
             # No 2x2 square will be created by the new tile, add it to the stack
             else:
                 stack.append(ni)
-                
+
         # Same logic as above applies.
         elif ci - ni == -1:  # Going east
             if ni + self._box_width < self._size and maze[ni + self._box_width] <= 0 \

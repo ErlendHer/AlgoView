@@ -1,9 +1,24 @@
 import pygame as pg
 
 import gui.constants as c
+from core.event.event_handler import EventHandler
 from core.maze.maze_builder import MazeBuilder
 from gui.colors import Color
+from gui.components.button import Button
 from gui.maze_handler import MazeHandler, get_direction
+
+event_queue = None
+
+
+def initialize_buttons(event_handler):
+    bottom_centre_line = c.SCREEN_HEIGHT - ((c.SCREEN_HEIGHT - (c.HEIGHT + c.PADX + 2*c.BORDER_SIZE)) // 2)
+    buttons = [Button(Color.DEFAULT_BTN, (c.PADX, bottom_centre_line-15), 150, 30, "random maze")]
+    buttons[0].set_on_click(lambda: event_handler.new_maze_event())
+
+    for btn in buttons:
+        btn.draw()
+
+    return buttons
 
 
 def run(screen, clock):
@@ -16,22 +31,19 @@ def run(screen, clock):
     maze_builder = MazeBuilder()
     maze = maze_builder.get_maze()
     maze_handler = MazeHandler(screen, maze, maze_builder.get_endpoints())
+    event_handler = EventHandler(maze, maze_handler, maze_builder)
     maze_handler.draw_maze()
-    color_maze = maze_builder.generate_random_maze()
-
-    # for i in range(len(maze)):
-    #    maze[i][2] = color_maze[i]
-    # maze_handler.draw_maze()
 
     line_direction = None
     initial_shift_pos = None
     pressed_keys = {"shift": False}
+    buttons = initialize_buttons(event_handler)
 
     # Application main loop
     while c.running:
-        clock.tick(c.TICK)
 
         for event in pg.event.get():
+            mouse_pos = pg.mouse.get_pos()
             if event.type == pg.QUIT:
                 c.running = False
 
@@ -40,7 +52,7 @@ def run(screen, clock):
                     pressed_keys["shift"] = True
                     initial_shift_pos = pg.mouse.get_pos()
                 if event.key == pg.K_RETURN:
-                    maze[next(color_maze, -1)][2] = 0
+                    # maze[next(color_maze, -1)][2] = 0
                     maze_handler.draw_maze()
 
             elif event.type == pg.KEYUP:
@@ -52,10 +64,15 @@ def run(screen, clock):
                 if not maze_handler.is_locked():
                     if event.button == 1:
                         maze_handler.draw_box_by_pos(event.pos, 1)
+                        for btn in buttons:
+                            btn.on_click(mouse_pos)
                     elif event.button == 3:
                         maze_handler.draw_box_by_pos(event.pos, 0)
 
             elif event.type == pg.MOUSEMOTION:
+                for btn in buttons:
+                    btn.hover(mouse_pos)
+
                 if not maze_handler.is_locked():
                     if not line_direction and pressed_keys["shift"]:
                         line_direction = get_direction(initial_shift_pos, event.pos)
@@ -73,9 +90,11 @@ def run(screen, clock):
                         elif event.buttons[2] == 1:
                             maze_handler.draw_box_line(event.pos, event.rel, 0)
 
-        maze[next(color_maze, 0)][2] = 0
-        maze_handler.draw_maze()
+        if event_handler.is_active():
+            event_handler.next()
+
         pg.display.update()
+        clock.tick(c.TICK)
 
     pg.quit()
 
@@ -93,6 +112,8 @@ if __name__ == '__main__':
     # We set the window size to be 85% smaller than the available screen resolution
     width = int(width * 0.85)
     height = int(height * 0.85)
+    c.SCREEN_WIDTH = width
+    c.SCREEN_HEIGHT = height
 
     # Calculate the size of our array to fit as many boxes as possible.
     # We want to cover 70 percent of the width of the screen, and 80% of the height.
@@ -101,7 +122,7 @@ if __name__ == '__main__':
 
     # Set the screen size of our application
     screen = pg.display.set_mode((width, height))
-    pg.display.set_caption("AlgoView")
+    pg.display.set_caption("AlgoView v1.0")
 
     # initialize game clock
     clock = pg.time.Clock()
@@ -112,6 +133,6 @@ if __name__ == '__main__':
     # Draw the maze border
     pg.draw.rect(screen, Color.BORDER,
                  pg.Rect(c.PADX, c.PADY, c.WIDTH + c.BORDER_SIZE * 2, c.HEIGHT + c.BORDER_SIZE * 2))
-
+    Button.screen = screen
     # Application main loop
     run(screen, clock)

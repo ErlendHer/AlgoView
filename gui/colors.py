@@ -7,4 +7,7 @@ class Color:
     START = (52, 235, 79)
     END = (52, 229, 235)
 
+    DEFAULT_BTN = (188, 204, 207)
+    DEFAULT_HOVER = (213, 233, 237)
+
     colors = {-2: END, -1: START, 0: BOX, 1: WALL}

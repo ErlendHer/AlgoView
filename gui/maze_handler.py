@@ -202,6 +202,29 @@ class MazeHandler:
                     self._draw_maze_box(box[0], box[1], color_code)
                 yy += ay
 
+    def draw_box_by_idx(self, i):
+        """
+        Call this method whenever one tile has been updated, and we want to redraw the given tile.
+        This is far more resource efficient than draw_maze, and should always be used instead whenever possible
+
+        :param i: index of the box to draw
+        :return: None
+        """
+        box = self.maze[i]
+        self._draw_maze_box(box[0], box[1], box[2])
+
+    def set_maze(self, maze):
+        self.maze = maze
+
+    def reset_maze(self):
+        """
+        Replace all white tiles with black wall tiles
+
+        :return: None
+        """
+        self.maze = [[box[0], box[1], box[2]] if box[2] < 0 else [box[0], box[1], 1] for box in self.maze]
+        self.draw_maze()
+
     def draw_maze(self):
         """
         Draw the maze to the screen based on the values in the maze list.
