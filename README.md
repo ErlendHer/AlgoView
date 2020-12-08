@@ -17,3 +17,16 @@ The _config.yml_ can be freely edited to change the appearance, maze size and mo
 * _tick_ - number of updates per second. Mostly used for debugging purposes, recommended to keep at 60.
 
 ## How to use application
+##### editing the maze
+As long as no current maze operation is running, you can freely edit the maze however you like. To place a new wall
+tile, simply press `left mouse button`, to remove a wall tile, press the `right mouse button`. The start and end tiles 
+are not editable.
+
+You may draw lines by holding down the left/right mouse button and dragging the mouse across the screen.
+
+Press `shift` to draw straight lines. _note_ -> this works better if you place a tile first, press `shift` and then move
+in the direction you want to draw.
+
+##### adjusting iteration speed
+to adjust the iteration speed, simply drag the circle in the slider to increase/decrease the simulation speed. This can 
+be performed whenever, regardless of weather an active simulation is happening or not.
