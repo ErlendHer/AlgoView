@@ -5,7 +5,7 @@ from random import shuffle, randint
 import gui.constants as c
 
 # Uncomment to replicate random maze generations
-# random.seed(17)
+# random.seed(0)
 
 
 class MazeBuilder:
@@ -222,9 +222,12 @@ class MazeBuilder:
         while len(stack) != 0:
             cur = stack.pop()
             if not visited[cur]:
-                maze[cur] = 0
                 self._backtrack_visitors(cur, maze, visited)
-                yield cur
+
+                # start and end tiles must not be yielded
+                if maze[cur] >= 0:
+                    maze[cur] = 0
+                    yield cur
 
                 neighbours = self.get_unvisited_neighbours(cur, visited)
                 shuffle(neighbours)
@@ -251,4 +254,11 @@ class MazeBuilder:
                 maze[idx] = -2
                 yield idx
                 idx -= 1
-        return maze
+
+    def export_maze(self):
+        """
+        export the relevant attributes of the generated maze to be used by other algorithms.
+
+        :return: tuple on the form (_start_idx, end_idx, size, box_height, box_width)
+        """
+        return self._start_idx, self._end_idx, self._size, self._box_height, self._box_width

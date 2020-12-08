@@ -216,6 +216,24 @@ class MazeHandler:
     def set_maze(self, maze):
         self.maze = maze
 
+    def remove_grey_tiles(self):
+        """
+        Remove all grey and yellow tiles from the maze
+
+        :return: None
+        """
+        self.maze = [[box[0], box[1], box[2]] if box[2] not in (2, 3) else [box[0], box[1], 0] for box in self.maze]
+        self.draw_maze()
+
+    def remove_all_colored_tiles(self):
+        """
+        Remove all colored tiles (except start and end) from the maze)
+
+        :return: None
+        """
+        self.maze = [[box[0], box[1], box[2]] if box[2] > 2 else [box[0], box[1], 0] for box in self.maze]
+        self.draw_maze()
+
     def reset_maze(self):
         """
         Replace all white tiles with black wall tiles

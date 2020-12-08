@@ -1,5 +1,5 @@
 class EventHandler:
-    def __init__(self, maze, maze_handler, maze_builder):
+    def __init__(self, maze, maze_handler, maze_builder, bfs):
         """
         Initialize a new EventHandler instance.
 
@@ -10,6 +10,7 @@ class EventHandler:
         self.maze = maze
         self.maze_handler = maze_handler
         self.maze_builder = maze_builder
+        self.bfs = bfs
 
         self.__active = False
         self.event_queue = lambda: None
@@ -57,6 +58,24 @@ class EventHandler:
         else:
             self.__reset()
 
+    def __next_bfs_event(self):
+        """
+        This is the generator function for the new_bfs_event. Update the next tile to color from the
+        bfs.
+
+        :return: None
+        """
+        next_tile = next(self.generator, [-1])
+
+        if next_tile[0] >= 0:
+            # 5 iterations per step to give similar speed to baseline random maze generation
+            for i in range(5):
+                self.maze[next_tile[0]][2] = next_tile[1]
+                self.maze_handler.draw_box_by_idx(next_tile[0])
+        else:
+            self.maze_handler.remove_grey_tiles()
+            self.__reset()
+
     def new_maze_event(self):
         """
         Create a new event for building a randomized maze.
@@ -70,3 +89,16 @@ class EventHandler:
             self.maze_handler.reset_maze()
             self.maze_handler.lock()
             self.maze = self.maze_handler.maze
+
+    def new_bfs_event(self):
+        """
+        Create a new event for finding the shortest path with bfs.
+
+        :return: None
+        """
+        if not self.__active:
+            self.__active = True
+            self.maze = self.maze_handler.maze
+            self.generator = self.bfs.bfs_shortest_path(self.maze)
+            self.maze_handler.lock()
+            self.event_queue = self.__next_bfs_event

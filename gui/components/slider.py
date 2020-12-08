@@ -1,5 +1,6 @@
 import pygame as pg
 import pygame.freetype
+import math
 
 import gui.constants as c
 from gui.colors import Color
@@ -21,7 +22,7 @@ class Slider:
         x += self.__radius
 
         self.__min, self.__max = slider_range
-        self.__slider_range = self.__max - self.__min
+        self.__slider_range = math.sqrt(self.__max - self.__min)  # slider range is quadratic to give better range.
         self.__slider_rect = pg.Rect(x, y, width, height)
         self.__background_rect = pg.Rect(x - self.__radius, y - self.__radius, width + self.__radius * 2,
                                          height + self.__radius * 2 + 2*c.PADY)
@@ -71,7 +72,7 @@ class Slider:
         elif x > self.__slider_rect.x + self.__slider_rect.w:
             self.__value = self.__max
         else:
-            self.__value = (x - self.__slider_rect.x) / self.__slider_rect.w * self.__slider_range + self.__min
+            self.__value = ((x - self.__slider_rect.x) / self.__slider_rect.w * self.__slider_range)**2 + self.__min
 
     def get_value(self):
         return self.__value

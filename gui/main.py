@@ -3,6 +3,7 @@ import pygame as pg
 import gui.constants as c
 from core.event.event_handler import EventHandler
 from core.maze.maze_builder import MazeBuilder
+from core.maze.bfs_shortest_path import BFS
 from core.timing.tick_timing import get_time_sync_list
 from gui.colors import Color
 from gui.components.button import Button
@@ -23,7 +24,11 @@ def initialize_components(event_handler, screen):
     buttons[0].set_on_click(lambda: event_handler.new_maze_event())
     x_pos += 150 + 2 * c.PADX
 
-    sliders.append(Slider(x_pos, bottom_centre_line - 5, 180, 10, (0.01, 8), display_value="speed"))
+    sliders.append(Slider(x_pos, bottom_centre_line - 5, 180, 10, (0.01, 30), display_value="speed"))
+    x_pos += 180 + 6*c.PADX
+
+    buttons.append(Button(Color.DEFAULT_BTN, (x_pos, bottom_centre_line - 15), 50, 30, "bfs"))
+    buttons[1].set_on_click(lambda: event_handler.new_bfs_event())
 
     for btn in buttons:
         btn.draw(screen)
@@ -44,7 +49,8 @@ def run(screen, clock):
     maze_builder = MazeBuilder()
     maze = maze_builder.get_maze()
     maze_handler = MazeHandler(screen, maze, maze_builder.get_endpoints())
-    event_handler = EventHandler(maze, maze_handler, maze_builder)
+    bfs = BFS(*maze_builder.export_maze())
+    event_handler = EventHandler(maze, maze_handler, maze_builder, bfs)
     maze_handler.draw_maze()
 
     line_direction = None
