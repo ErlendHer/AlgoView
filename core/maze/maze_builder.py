@@ -219,6 +219,9 @@ class MazeBuilder:
         # Remember the direction we came from
         prev_dir = 0
 
+        # counter variable to keep track of how many increments has been executed (reset on every yield)
+        increments = 1
+
         while len(stack) != 0:
             cur = stack.pop()
             if not visited[cur]:
@@ -227,7 +230,10 @@ class MazeBuilder:
                 # start and end tiles must not be yielded
                 if maze[cur] >= 0:
                     maze[cur] = 0
-                    yield cur
+                    yield cur, increments
+
+                # reset increments after yield
+                increments = 1
 
                 neighbours = self.get_unvisited_neighbours(cur, visited)
                 shuffle(neighbours)
@@ -236,10 +242,12 @@ class MazeBuilder:
                     for i, n in enumerate(neighbours):
                         if n[1] == prev_dir:
                             neighbours.append(neighbours.pop(i))
+                        increments += 1
                         break
 
                 # Iterate over the neighbours and add them to the stack if they are unvisited
                 for n in neighbours:
+                    increments += 1
                     self.process_neighbour(cur, n[0], maze, visited, stack)
 
                 prev_dir = neighbours[-1][1] if neighbours else prev_dir
@@ -252,7 +260,7 @@ class MazeBuilder:
             idx = self._end_idx - 1
             while maze[idx] != 0:
                 maze[idx] = -2
-                yield idx
+                yield idx, 1
                 idx -= 1
 
     def export_maze(self):

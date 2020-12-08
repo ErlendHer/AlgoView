@@ -29,6 +29,16 @@ class BFS:
 
         return neighbours
 
+    def bidirectional_bfs(self, maze):
+        # Create empty queues
+        queue1 = Queue()
+        queue2 = Queue()
+
+        parents = [None for i in range(self._size)]
+
+        # compress the maze to only contain color codes (more memory efficient)
+        maze = [box[2] for box in maze]
+
     def bfs_shortest_path(self, maze):
         # create empty queue
         queue = Queue()

@@ -24,9 +24,10 @@ are not editable.
 
 You may draw lines by holding down the left/right mouse button and dragging the mouse across the screen.
 
-Press `shift` to draw straight lines. _note_ -> this works better if you place a tile first, press `shift` and then move
+Press `shift` to draw straight lines.  
+> **_NOTE:_** this works better if you place a tile first, press `shift` and then move
 in the direction you want to draw.
 
 ##### adjusting iteration speed
 to adjust the iteration speed, simply drag the circle in the slider to increase/decrease the simulation speed. This can 
-be performed whenever, regardless of weather an active simulation is happening or not.
+be done whenever, regardless of weather an active simulation is happening or not.

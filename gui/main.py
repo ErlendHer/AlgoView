@@ -1,4 +1,5 @@
 import pygame as pg
+import pygame.freetype
 
 import gui.constants as c
 from core.event.event_handler import EventHandler
@@ -8,13 +9,29 @@ from core.timing.tick_timing import get_time_sync_list
 from gui.colors import Color
 from gui.components.button import Button
 from gui.components.slider import Slider
+from gui.components.text_table import TextTable
 from gui.maze_handler import MazeHandler, get_direction
 
 event_queue = None
 
 
+def initialize_text_table(screen):
+    x_pos = c.WIDTH + 3*c.PADY + 2 * c.BORDER_SIZE
+    header_font = pygame.freetype.SysFont(c.FONT, 16, bold=True)
+    header_font.render_to(screen, (x_pos, c.PADY*2 + c.BORDER_SIZE), f"Increments (time complexity)")
+
+    indexes = {}
+
+    table = TextTable(x_pos, c.PADY*3 + c.BORDER_SIZE, 200, 24)
+    indexes['random_maze'] = table.add_text_variable("random maze")
+    indexes['bfs'] = table.add_text_variable("bfs")
+    table.draw_table(screen)
+
+    return table, indexes
+
+
 def initialize_components(event_handler, screen):
-    bottom_centre_line = c.SCREEN_HEIGHT - ((c.SCREEN_HEIGHT - (c.HEIGHT + c.PADX + 2 * c.BORDER_SIZE)) // 2)
+    bottom_centre_line = c.SCREEN_HEIGHT - ((c.SCREEN_HEIGHT - (c.HEIGHT + c.PADY + 2 * c.BORDER_SIZE)) // 2)
 
     x_pos = c.PADX
     buttons = []
@@ -41,24 +58,29 @@ def initialize_components(event_handler, screen):
 
 def run(screen, clock):
     """
-    Application main loop. All application logic is based here
+    Application main loop. All application logic is based here.
+
     :param screen: pygame screen object
-    :param clock: pugame clock object
+    :param clock: pygame clock object
     :return: None
     """
     maze_builder = MazeBuilder()
     maze = maze_builder.get_maze()
     maze_handler = MazeHandler(screen, maze, maze_builder.get_endpoints())
+
     bfs = BFS(*maze_builder.export_maze())
-    event_handler = EventHandler(maze, maze_handler, maze_builder, bfs)
+    text_table, indexes = initialize_text_table(screen)
+
+    event_handler = EventHandler(maze, maze_handler, maze_builder, bfs, indexes, text_table, screen)
     maze_handler.draw_maze()
 
     line_direction = None
     initial_shift_pos = None
     pressed_keys = {"shift": False}
-    buttons, sliders = initialize_components(event_handler, screen)
-    ticks = 0
 
+    buttons, sliders = initialize_components(event_handler, screen)
+
+    ticks = 0
     # default logic operations to perform per tick of 1.0 speed
     ops_per_tick = get_time_sync_list(1.0)
 

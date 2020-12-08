@@ -157,7 +157,7 @@ class MazeHandler:
     def draw_box_line(self, pos, rel_pos, color_code):
         """
         When the user has dragged the mouse across the maze, we want to fill in a line of boxes.
-        :param straight: determine if we only accept a straight line
+
         :param pos: final known cursor position
         :param rel_pos: relative movement from initial cursor position
         :param color_code: integer representing what color the box should be, see get_color_by_code for more info
@@ -231,7 +231,7 @@ class MazeHandler:
 
         :return: None
         """
-        self.maze = [[box[0], box[1], box[2]] if box[2] > 2 else [box[0], box[1], 0] for box in self.maze]
+        self.maze = [[box[0], box[1], box[2]] if box[2] < 2 else [box[0], box[1], 0] for box in self.maze]
         self.draw_maze()
 
     def reset_maze(self):
