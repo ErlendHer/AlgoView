@@ -1,26 +1,26 @@
-class Obj:
-    def __init__(self):
-        self.a = 2
-        self.b = 3
+import math
 
-class A:
-    def __init__(self):
-        self.obj = Obj()
 
-    def modify_obj(self):
-        self.obj.a = -1
+def binary_range(speed, tick):
+    base = math.floor(speed)
+    step_up = base + 1
 
-class B:
-    def __init__(self, obj):
-        self.obj = obj
+    ax = speed - base
 
-    def modify_obj(self):
-        self.obj.a = 100
+    step = 0
+    result = []
+    prev = 0
 
-a = A()
-b = B(a.obj)
-print(a.obj.a, b.obj.a)
-a.modify_obj()
-print(a.obj.a, b.obj.a)
-b.modify_obj()
-print(a.obj.a, b.obj.a)
+    for i in range(tick):
+        floored = math.ceil(step)
+
+        result.append(base if floored == prev else step_up)
+        prev = floored
+        step += ax
+
+    return base, step_up, result
+
+li = binary_range(2, 4)
+
+print(li)
+print(len([i for i in li if i == 2]))

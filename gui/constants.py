@@ -10,6 +10,8 @@ SCREEN_WIDTH = 0    # Application width in pixels
 SCREEN_HEIGHT = 0   # Application height in pixels
 MAZE_LOC = (0, 0)   # Location of the first pixel of the maze
 
+FONT = "Courier New"
+
 running = True      # Controls the game loop, terminates application when False
 
 TICK = None         # Number of updates performed per second
@@ -22,7 +24,7 @@ default_config = {
     "tick": 60,
     "pad_x": 4,
     "pad_y": 4,
-    "box_size": 15,
+    "box_size": 20,
     "border_size": 2
 }
 

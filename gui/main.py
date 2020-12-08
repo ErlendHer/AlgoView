@@ -3,22 +3,35 @@ import pygame as pg
 import gui.constants as c
 from core.event.event_handler import EventHandler
 from core.maze.maze_builder import MazeBuilder
+from core.timing.tick_timing import get_time_sync_list
 from gui.colors import Color
 from gui.components.button import Button
+from gui.components.slider import Slider
 from gui.maze_handler import MazeHandler, get_direction
 
 event_queue = None
 
 
-def initialize_buttons(event_handler):
-    bottom_centre_line = c.SCREEN_HEIGHT - ((c.SCREEN_HEIGHT - (c.HEIGHT + c.PADX + 2*c.BORDER_SIZE)) // 2)
-    buttons = [Button(Color.DEFAULT_BTN, (c.PADX, bottom_centre_line-15), 150, 30, "random maze")]
+def initialize_components(event_handler, screen):
+    bottom_centre_line = c.SCREEN_HEIGHT - ((c.SCREEN_HEIGHT - (c.HEIGHT + c.PADX + 2 * c.BORDER_SIZE)) // 2)
+
+    x_pos = c.PADX
+    buttons = []
+    sliders = []
+
+    buttons.append(Button(Color.DEFAULT_BTN, (x_pos, bottom_centre_line - 15), 150, 30, "random maze"))
     buttons[0].set_on_click(lambda: event_handler.new_maze_event())
+    x_pos += 150 + 2 * c.PADX
+
+    sliders.append(Slider(x_pos, bottom_centre_line - 5, 180, 10, (0.01, 8), display_value="speed"))
 
     for btn in buttons:
-        btn.draw()
+        btn.draw(screen)
 
-    return buttons
+    for slider in sliders:
+        slider.draw(screen)
+
+    return buttons, sliders
 
 
 def run(screen, clock):
@@ -37,7 +50,11 @@ def run(screen, clock):
     line_direction = None
     initial_shift_pos = None
     pressed_keys = {"shift": False}
-    buttons = initialize_buttons(event_handler)
+    buttons, sliders = initialize_components(event_handler, screen)
+    ticks = 0
+
+    # default logic operations to perform per tick of 1.0 speed
+    ops_per_tick = get_time_sync_list(1.0)
 
     # Application main loop
     while c.running:
@@ -52,7 +69,6 @@ def run(screen, clock):
                     pressed_keys["shift"] = True
                     initial_shift_pos = pg.mouse.get_pos()
                 if event.key == pg.K_RETURN:
-                    # maze[next(color_maze, -1)][2] = 0
                     maze_handler.draw_maze()
 
             elif event.type == pg.KEYUP:
@@ -71,7 +87,13 @@ def run(screen, clock):
 
             elif event.type == pg.MOUSEMOTION:
                 for btn in buttons:
-                    btn.hover(mouse_pos)
+                    btn.hover(screen, mouse_pos)
+
+                if pg.mouse.get_pressed(3)[0]:
+                    for slider in sliders:
+                        if slider.on_slider(event.pos):
+                            slider.handle_event(screen, event.pos[0])
+                    ops_per_tick = get_time_sync_list(sliders[0].get_value())
 
                 if not maze_handler.is_locked():
                     if not line_direction and pressed_keys["shift"]:
@@ -91,9 +113,11 @@ def run(screen, clock):
                             maze_handler.draw_box_line(event.pos, event.rel, 0)
 
         if event_handler.is_active():
-            event_handler.next()
+            for i in range(ops_per_tick[ticks % 60]):
+                event_handler.next()
 
         pg.display.update()
+        ticks += 1
         clock.tick(c.TICK)
 
     pg.quit()
