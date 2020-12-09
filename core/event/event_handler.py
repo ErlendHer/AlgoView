@@ -68,6 +68,7 @@ class EventHandler:
             self.maze[next_tile][2] = 0
             self.maze_handler.draw_box_by_idx(next_tile)
         else:
+            self.maze_handler.remove_grey_tiles()
             self.__reset()
 
     def __next_bfs_event(self):
@@ -88,6 +89,28 @@ class EventHandler:
                 self.maze[next_tile[0]][2] = next_tile[1]
                 self.maze_handler.draw_box_by_idx(next_tile[0])
         else:
+            self.maze_handler.remove_grey_tiles()
+            self.__reset()
+
+    def __next_bi_bfs_event(self):
+        """
+        This is the generator function for the new_bfs_event. Update the next tile to color from the
+        bfs.
+
+        :return: None
+        """
+        next_tile = next(self.generator, [-1])
+
+        if next_tile[0] >= 0:
+            # 5 iterations per step to give similar speed to baseline random maze generation
+            for i in range(5):
+                self.__text_table.increment_value(self.__current_table_index)
+                self.__text_table.draw_table_element(self.__screen, self.__current_table_index)
+
+                self.maze[next_tile[0]][2] = next_tile[1]
+                self.maze_handler.draw_box_by_idx(next_tile[0])
+        else:
+            print(self.maze)
             self.maze_handler.remove_grey_tiles()
             self.__reset()
 
@@ -127,3 +150,23 @@ class EventHandler:
 
             self.maze_handler.lock()
             self.event_queue = self.__next_bfs_event
+
+    def new_bidirectional_bfs_event(self):
+        """
+        Create a new event for finding the shortest path with bfs.
+
+        :return: None
+        """
+        if not self.__active:
+            self.__active = True
+            self.__current_table_index = self.__indexes['bi_bfs']
+            self.__text_table.reset_value(self.__current_table_index)
+
+            self.maze_handler.remove_all_colored_tiles()
+            self.maze = self.maze_handler.maze
+
+            self.generator = self.bfs.bidirectional_bfs(self.maze)
+
+            self.maze_handler.lock()
+            self.event_queue = self.__next_bi_bfs_event
+            print(self.maze)

@@ -222,7 +222,8 @@ class MazeHandler:
 
         :return: None
         """
-        self.maze = [[box[0], box[1], box[2]] if box[2] not in (2, 3) else [box[0], box[1], 0] for box in self.maze]
+        self.maze = [[box[0], box[1], box[2]] if box[2] not in (2, 3, 4, 5)
+                     else [box[0], box[1], 0] for box in self.maze]
         self.draw_maze()
 
     def remove_all_colored_tiles(self):
@@ -231,7 +232,7 @@ class MazeHandler:
 
         :return: None
         """
-        self.maze = [[box[0], box[1], box[2]] if box[2] < 2 else [box[0], box[1], 0] for box in self.maze]
+        self.maze = [[box[0], box[1], box[2]] if box[2] < 3 else [box[0], box[1], 0] for box in self.maze]
         self.draw_maze()
 
     def reset_maze(self):

@@ -1,26 +1,19 @@
-import math
+def generator_function(a, b):
+    for i in range(3):
+        yield a+i, b
 
 
-def binary_range(speed, tick):
-    base = math.floor(speed)
-    step_up = base + 1
+def main_func():
+    gen = generator_function(2, 3)
+    while True:
+        a = next(gen, -1)
+        if a == -1:
+            break
+        yield a
 
-    ax = speed - base
 
-    step = 0
-    result = []
-    prev = 0
 
-    for i in range(tick):
-        floored = math.ceil(step)
+gen2 = main_func()
 
-        result.append(base if floored == prev else step_up)
-        prev = floored
-        step += ax
-
-    return base, step_up, result
-
-li = binary_range(2, 4)
-
-print(li)
-print(len([i for i in li if i == 2]))
+for i in range(4):
+    print(next(gen2))

@@ -22,30 +22,35 @@ def initialize_text_table(screen):
 
     indexes = {}
 
-    table = TextTable(x_pos, c.PADY*3 + c.BORDER_SIZE, 200, 24)
+    table = TextTable(x_pos, c.PADY*3 + c.BORDER_SIZE, 250, 24)
     indexes['random_maze'] = table.add_text_variable("random maze")
     indexes['bfs'] = table.add_text_variable("bfs")
+    indexes['bi_bfs'] = table.add_text_variable("bidirectional bfs")
     table.draw_table(screen)
 
     return table, indexes
 
 
 def initialize_components(event_handler, screen):
-    bottom_centre_line = c.SCREEN_HEIGHT - ((c.SCREEN_HEIGHT - (c.HEIGHT + c.PADY + 2 * c.BORDER_SIZE)) // 2)
+    first_row = c.HEIGHT + 4*c.PADY + 2*c.BORDER_SIZE
 
     x_pos = c.PADX
     buttons = []
     sliders = []
 
-    buttons.append(Button(Color.DEFAULT_BTN, (x_pos, bottom_centre_line - 15), 150, 30, "random maze"))
+    buttons.append(Button(Color.DEFAULT_BTN, (x_pos, first_row), 130, 30, "random maze"))
     buttons[0].set_on_click(lambda: event_handler.new_maze_event())
-    x_pos += 150 + 2 * c.PADX
+    x_pos += 130 + 2 * c.PADX
 
-    sliders.append(Slider(x_pos, bottom_centre_line - 5, 180, 10, (0.01, 30), display_value="speed"))
+    sliders.append(Slider(x_pos, first_row+10, 180, 10, (0.01, 30), display_value="speed"))
     x_pos += 180 + 6*c.PADX
 
-    buttons.append(Button(Color.DEFAULT_BTN, (x_pos, bottom_centre_line - 15), 50, 30, "bfs"))
+    buttons.append(Button(Color.DEFAULT_BTN, (x_pos, first_row), 50, 30, "bfs"))
     buttons[1].set_on_click(lambda: event_handler.new_bfs_event())
+    x_pos += 50 + 2*c.PADX
+
+    buttons.append(Button(Color.DEFAULT_BTN, (x_pos, first_row), 200, 30, "bidirectional bfs"))
+    buttons[2].set_on_click(lambda: event_handler.new_bidirectional_bfs_event())
 
     for btn in buttons:
         btn.draw(screen)
