@@ -33,3 +33,5 @@ in the direction you want to draw.
 ##### adjusting iteration speed
 to adjust the iteration speed, simply drag the circle in the slider to increase/decrease the simulation speed. This can 
 be done whenever, regardless of weather an active simulation is happening or not.
+
+![Image of AlgoView](https://user-images.githubusercontent.com/55985032/101630297-0198f580-3a23-11eb-95e1-f8c7534fad09.PNG)
