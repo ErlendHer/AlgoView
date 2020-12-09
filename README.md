@@ -6,7 +6,7 @@ Simple Python GUI application to demonstrate the usage of different algorithms f
 * create a new python virtual environment. [guide](https://uoa-eresearch.github.io/eresearch-cookbook/recipe/2014/11/26/python-virtual-env/) 
 * in the terminal with the activated venv: `pip install -r requirements.txt`
 * clone the repository to your venv
-* execute script from application entry point: `gui/main.py`
+* execute script from application entry point: `python -m gui.main`
 
 ## Configuration
 The _config.yml_ can be freely edited to change the appearance, maze size and more. If you want to restore to default configuration values, simply delete the config.yml and run the application
