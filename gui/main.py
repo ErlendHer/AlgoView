@@ -17,35 +17,58 @@ event_queue = None
 
 
 def initialize_text_table(screen):
-    x_pos = c.WIDTH + 3*c.PADY + 2 * c.BORDER_SIZE
+    """
+    Initialize and draw the text table displaying increments of the different algorithms.
+
+    :param screen: pygame screen instance
+    :return: tuple on the form (table, indexes), where table is the TextTable instance, and indexes is the dictionary
+    of the respective indexes.
+    """
+
+    # Set the x_position just to the right of the maze
+    x_pos = c.WIDTH + 3*c.PADX + 2 * c.BORDER_SIZE
     header_font = pygame.freetype.SysFont(c.FONT, 16, bold=True)
     header_font.render_to(screen, (x_pos, c.PADY*2 + c.BORDER_SIZE), f"Increments (time complexity)")
 
     indexes = {}
 
-    table = TextTable(x_pos, c.PADY*3 + c.BORDER_SIZE, 250, 24)
+    # create a new TextTable and populate with the appropriate algorithms.
+    table = TextTable(x_pos, c.PADY*3 + c.BORDER_SIZE, 280, 24)
+
     indexes['random_maze'] = table.add_text_variable("random maze")
     indexes['bfs'] = table.add_text_variable("bfs")
     indexes['bi_bfs'] = table.add_text_variable("bidirectional bfs")
     indexes['a_star'] = table.add_text_variable("A*")
+
+    # draw the table to the screen
     table.draw_table(screen)
 
     return table, indexes
 
 
 def initialize_components(event_handler, screen):
+    """
+    Initialize all gui components and draw them to the screen.
+
+    :param event_handler: EventHandler instance
+    :param screen: pygame screen instance
+    :return: tuple on the form (buttons, sliders), which contain our Button and Slider instances.
+    """
+
+    # compute the y position of the first row, just below the maze
     first_row = c.HEIGHT + 4*c.PADY + 2*c.BORDER_SIZE
 
     x_pos = c.PADX
     buttons = []
     sliders = []
 
+    # append the different buttons to our list and set their corresponding functions
     buttons.append(Button(Color.DEFAULT_BTN, (x_pos, first_row), 130, 30, "random maze"))
     buttons[0].set_on_click(lambda: event_handler.new_maze_event())
     x_pos += 130 + 2 * c.PADX
 
-    sliders.append(Slider(x_pos, first_row+10, 180, 10, (0.01, 30), display_value="speed"))
-    x_pos += 180 + 6*c.PADX
+    sliders.append(Slider(x_pos, first_row+10, 200, 10, (0.01, 40), display_value="speed"))
+    x_pos += 200 + 6*c.PADX
 
     buttons.append(Button(Color.DEFAULT_BTN, (x_pos, first_row), 50, 30, "bfs"))
     buttons[1].set_on_click(lambda: event_handler.new_bfs_event())
@@ -58,6 +81,7 @@ def initialize_components(event_handler, screen):
     buttons.append(Button(Color.DEFAULT_BTN, (x_pos, first_row), 50, 30, "A*"))
     buttons[3].set_on_click(lambda: event_handler.new_a_star_event())
 
+    # iterate over the buttons and sliders and draw them to the screen.
     for btn in buttons:
         btn.draw(screen)
 
@@ -69,12 +93,15 @@ def initialize_components(event_handler, screen):
 
 def run(screen, clock):
     """
-    Application main loop. All application logic is based here.
+    Application main loop. Communication point between all application logic, performing c.TICK updates every second and
+    handling the mouse/keyboard events that arise.
 
     :param screen: pygame screen object
     :param clock: pygame clock object
     :return: None
     """
+
+    # Instantiate the different helper classes and core logic to be executed when the user performs a certain action.
     maze_builder = MazeBuilder()
     maze = maze_builder.get_maze()
     maze_handler = MazeHandler(screen, maze, maze_builder.get_endpoints())
@@ -84,14 +111,18 @@ def run(screen, clock):
     text_table, indexes = initialize_text_table(screen)
 
     event_handler = EventHandler(maze, maze_handler, maze_builder, bfs, a_star, indexes, text_table, screen)
+
+    # draw the maze to the screen
     maze_handler.draw_maze()
 
     line_direction = None
     initial_shift_pos = None
     pressed_keys = {"shift": False}
 
+    # create and draw all sliders and buttons
     buttons, sliders = initialize_components(event_handler, screen)
 
+    # total updates performed, used for modulo and timing operations
     ticks = 0
     # default logic operations to perform per tick of 1.0 speed
     ops_per_tick = get_time_sync_list(1.0)
@@ -103,9 +134,12 @@ def run(screen, clock):
             mouse_pos = pg.mouse.get_pos()
             if event.type == pg.QUIT:
                 c.running = False
+                continue
 
+            # user pressed a key
             elif event.type == pg.KEYDOWN:
                 if (event.key == pg.K_LSHIFT or event.key == pg.K_RSHIFT) and not initial_shift_pos:
+                    # user pressed shift, store mouse position to calculate the line later.
                     pressed_keys["shift"] = True
                     initial_shift_pos = pg.mouse.get_pos()
                 if event.key == pg.K_c:
@@ -113,22 +147,31 @@ def run(screen, clock):
 
             elif event.type == pg.KEYUP:
                 if event.key == pg.K_LSHIFT or event.key == pg.K_RSHIFT:
+                    # clear the pressed keys and initial_shift_pos variables
                     pressed_keys["shift"] = False
                     initial_shift_pos = None
 
+            # mouse click
             elif event.type == pg.MOUSEBUTTONDOWN:
                 if not maze_handler.is_locked():
+                    # right click
                     if event.button == 1:
+                        # draw a wall to the screen
                         maze_handler.draw_box_by_pos(event.pos, 1)
                         for btn in buttons:
                             btn.on_click(mouse_pos)
+                    # left click
                     elif event.button == 3:
+                        # erase a wall from the screen
                         maze_handler.draw_box_by_pos(event.pos, 0)
 
+            # user moved the cursor
             elif event.type == pg.MOUSEMOTION:
+                # compute hover events and highlight buttons if cursor is above them.
                 for btn in buttons:
                     btn.hover(screen, mouse_pos)
 
+                # handle slider events and update the ops_per_tick variable
                 if pg.mouse.get_pressed(3)[0]:
                     for slider in sliders:
                         if slider.on_slider(event.pos):
@@ -136,34 +179,48 @@ def run(screen, clock):
                     ops_per_tick = get_time_sync_list(sliders[0].get_value())
 
                 if not maze_handler.is_locked():
+
+                    # compute the direction of the line to draw
                     if not line_direction and pressed_keys["shift"]:
                         line_direction = get_direction(initial_shift_pos, event.pos)
+                    # reset line direction when shift is no longer pressed
                     if line_direction and not pressed_keys["shift"]:
                         line_direction = None
 
                     if line_direction:
+                        # draw a line to the screen
                         if event.buttons[0] == 1:
                             maze_handler.draw_straight_line(line_direction, event.pos, event.rel, 1)
                         elif event.buttons[2] == 1:
                             maze_handler.draw_straight_line(line_direction, event.pos, event.rel, 0)
                     elif not pressed_keys["shift"]:
+                        # draw a straight line to the screen
                         if event.buttons[0] == 1:
                             maze_handler.draw_box_line(event.pos, event.rel, 1)
                         elif event.buttons[2] == 1:
                             maze_handler.draw_box_line(event.pos, event.rel, 0)
 
+        # if there is an active event ongoing, get the next generator call.
         if event_handler.is_active():
+            # perform a certain number of iterations based on the ops_per_tick determined by the speed slider
             for i in range(ops_per_tick[ticks % 60]):
                 event_handler.next()
-
+        # update the display
         pg.display.update()
+        # increment total ticks
         ticks += 1
+
+        # sleep to achieve c.TICK updates per second
         clock.tick(c.TICK)
 
+    # exit application
     pg.quit()
 
 
 if __name__ == '__main__':
+    """
+    Application entry point.
+    """
     pg.init()
 
     # Load config.yml and initialize constants
@@ -194,9 +251,10 @@ if __name__ == '__main__':
     c.MAZE_LOC = (c.PADX + c.BORDER_SIZE, c.PADY + c.BORDER_SIZE)
 
     pg.draw.rect(screen, Color.BACKGROUND, pg.Rect(0, 0, width, height))
-    # Draw the maze border
+    # Draw the _maze border
     pg.draw.rect(screen, Color.BORDER,
                  pg.Rect(c.PADX, c.PADY, c.WIDTH + c.BORDER_SIZE * 2, c.HEIGHT + c.BORDER_SIZE * 2))
     Button.screen = screen
+
     # Application main loop
     run(screen, clock)

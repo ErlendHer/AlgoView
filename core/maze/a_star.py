@@ -5,6 +5,7 @@ from core.maze.bfs import BFS
 
 class AStar(BFS):
     def __init__(self, start_idx, end_idx, size, box_height, box_width):
+        # initialize maze constants
         super().__init__(start_idx, end_idx, size, box_height, box_width)
 
     def h(self, idx1, idx2):
@@ -21,9 +22,9 @@ class AStar(BFS):
 
     def a_star(self, maze):
         """
-        Fint the shortest path in the maze using the principles of the A* algorithm
+        Find the shortest path in the maze using the principles of the A* algorithm.
 
-        :param maze: maze list
+        :param maze: _maze list
         :return: None
         """
         maze = [box[2] for box in maze]
@@ -90,6 +91,6 @@ class AStar(BFS):
                 yield tile, 6
                 tile = parents[tile]
 
-        # finally, make sure start and end get the correct color
+        # finally, make sure start and end tiles get the correct color
         yield self._start_idx, -1
         yield self._end_idx, -2

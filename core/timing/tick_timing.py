@@ -15,29 +15,29 @@ def get_time_sync_list(speed):
     :param speed: float multiplier of speed, e.g 1.0, 0.1, 3.4
     :return: list of length c.TICK containing how many operations to perform per clock cycle
     """
-    # default __value of our tick cycle
+    # default value of our tick cycle
     base = math.floor(speed)
 
-    # incremented __value to perform to get a correct number of operations in a cycle
+    # incremented value to perform to get a correct number of operations in a cycle
     step_up = base + 1
 
     # slope of function
     ax = speed - base
 
-    # current __value of our function
+    # current value of our function
     step = 0
-    # previous __value of our function
+    # previous value of our function
     prev = 0
 
     result = []
 
     for i in range(c.TICK):
 
-        # floor the current __value of the function
+        # floor the current value of the function
         floored = math.ceil(step)
 
-        # if the current __value is different from the previous, this means that the function has incremented by one
-        # since last increment, and we need to append the step_up __value to our result, otherwise the base is appended.
+        # if the current value is different from the previous, this means that the function has incremented by one
+        # since last increment, and we need to append the step_up value to our result, otherwise the base is appended.
         result.append(base if floored == prev else step_up)
 
         prev = floored

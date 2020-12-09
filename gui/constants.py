@@ -4,11 +4,11 @@ import sys
 import yaml
 from yaml.scanner import ScannerError
 
-WIDTH = 0           # Height of our maze in pixels
-HEIGHT = 0          # Width of our maze in pixels
+WIDTH = 0           # Height of our _maze in pixels
+HEIGHT = 0          # Width of our _maze in pixels
 SCREEN_WIDTH = 0    # Application width in pixels
 SCREEN_HEIGHT = 0   # Application height in pixels
-MAZE_LOC = (0, 0)   # Location of the first pixel of the maze
+MAZE_LOC = (0, 0)   # Location of the first pixel of the _maze
 
 FONT = "Courier New"
 
@@ -17,7 +17,7 @@ running = True      # Controls the game loop, terminates application when False
 TICK = None         # Number of updates performed per second
 PADX = None         # Global padding in the y direction
 PADY = None         # Global padding in the x direction
-BOX_SIZE = None     # Size of each individual box representing the maze
+BOX_SIZE = None     # Size of each individual box representing the _maze
 BORDER_SIZE = None  # Thickness of the application borders
 
 default_config = {
@@ -76,7 +76,7 @@ def load_config():
 
 def _create_config(path):
     """
-    Creates default config file
+    Creates default config file.
     """
     with open(path, "w+") as f:
         yaml.dump(default_config, f)

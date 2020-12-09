@@ -4,13 +4,16 @@ from random import shuffle, randint
 
 import gui.constants as c
 
-# Uncomment to replicate random maze generations
+# Uncomment to replicate random _maze generations
 # random.seed(0)
 
 
 class MazeBuilder:
 
     def __init__(self):
+        """
+        Create a new MazeBuilder instance, which handles maze initialization and random generation.
+        """
         self._maze = []
         self._start_pos = (0, 0)
         self._end_pos = (0, 0)
@@ -26,7 +29,8 @@ class MazeBuilder:
 
     def get_endpoints(self):
         """
-        Get the start and end coordinates of the maze
+        Get the start and end coordinates of the maze.
+
         :return: Tuple on the form ((sx, sy), (ex, ey))
         """
         return tuple([self._start_pos, self._end_pos])
@@ -34,41 +38,52 @@ class MazeBuilder:
     def initialize_maze(self):
         """
         Creates a 2d list where each element in the list contains its x and y position, along with its current color
-        code which signifies what color it should be. => Each element in the list is on the form [x, y, color]
+        code which signifies what color it should be. => Each element in the list is on the form [x, y, color].
 
         :return: None
         """
+        # instantiate the maze in a 2D list, where each element contains x_pos, y_pos and color_code
         self._maze = [[x + c.MAZE_LOC[0], y + c.MAZE_LOC[1], 0] for y in range(0, c.HEIGHT, c.BOX_SIZE) for x in
                       range(0, c.WIDTH, c.BOX_SIZE)]
 
         self._size = len(self._maze)
+
         half_len = self._size // 2
+
+        # compute the start and end index of the maze
         self._start_idx = half_len if self._box_height % 2 == 0 else half_len - self._box_width // 2
         self._end_idx = self._start_idx + self._box_width - 1
         self._maze[self._start_idx][2] = -1
         self._maze[self._end_idx][2] = -2
 
+        # compute the start and end position
         self._start_pos = (self._maze[self._start_idx][0], self._maze[self._start_idx][1])
         self._end_pos = (self._maze[self._end_idx][0], self._maze[self._end_idx][1])
 
     def get_maze(self):
+        """
+        Get the active maze list.
+
+        :return: None
+        """
         return self._maze
 
     def get_unvisited_neighbours(self, i, visited):
         """
-        Get all the neighbours of a node
-        :param i: index of the current node
+        Get all the neighbours of a tile.
+
+        :param i: index of the current tile
         :param visited: visited array
-        :return: list of unvisited neighbours
+        :return: list of unvisited neighbours, where each element contains [index, direction]
         """
         neighbours = []
-        if i - 1 >= 0 and i % self._box_width != 0 and not visited[i - 1]:
+        if i - 1 >= 0 and i % self._box_width != 0 and not visited[i - 1]:  # west
             neighbours.append([i - 1, -2])
-        if i + 1 < self._size and (i + 1) % self._box_width != 0 and not visited[i + 1]:
+        if i + 1 < self._size and (i + 1) % self._box_width != 0 and not visited[i + 1]:  # east
             neighbours.append([i + 1, -1])
-        if i - self._box_width >= 0 and not visited[i - self._box_width]:
+        if i - self._box_width >= 0 and not visited[i - self._box_width]:  # north
             neighbours.append([i - self._box_width, 1])
-        if i + self._box_width < self._size and not visited[i + self._box_width]:
+        if i + self._box_width < self._size and not visited[i + self._box_width]:  # south
             neighbours.append([i + self._box_width, 2])
 
         return neighbours
@@ -135,7 +150,7 @@ class MazeBuilder:
         When we create a new white, open tile, we check what direction we most likely came from, and mark
         its neighbours as visited. Consider the example below, where '*' is a black wall, o is a white path
         tile, and i is the current tile we are at. In this case we want to mark the tiles b1 and b3 as visited,
-        because we want the walls to stay there. This is to generate a more 'organic' maze where paths in the maze
+        because we want the walls to stay there. This is to generate a more 'organic' maze where paths in the _maze
         are properly separated by walls.
           a b c d
         1|*|*|*|*|\n
@@ -207,7 +222,7 @@ class MazeBuilder:
 
         :return: yields the wall to remove every time next() is called on this function.
         """
-        # Create a list containing the color code of the maze tiles
+        # Create a list containing the color code of the _maze tiles
         maze = [box[2] if box[2] < 0 else 1 for box in self._maze]
         # Create a list to remember which vertices (or tiles) have already been visited.
         visited = [False for i in range(self._size)]
@@ -253,7 +268,7 @@ class MazeBuilder:
                 prev_dir = neighbours[-1][1] if neighbours else prev_dir
                 visited[cur] = True
 
-        # Check to see that we have a path going from the start to the end of the maze, if not, the issue is resolved
+        # Check to see that we have a path going from the start to the end of the _maze, if not, the issue is resolved
         # by going east until we encounter a path.
         if maze[self._end_idx - 1] == 1 and maze[self._end_idx + self._box_width] == 1 and \
                 maze[self._end_idx - self._box_width] == 1:
@@ -265,7 +280,7 @@ class MazeBuilder:
 
     def export_maze(self):
         """
-        export the relevant attributes of the generated maze to be used by other algorithms.
+        export the relevant attributes of the generated _maze to be used by other algorithms.
 
         :return: tuple on the form (_start_idx, end_idx, size, box_height, box_width)
         """

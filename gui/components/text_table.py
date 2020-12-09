@@ -9,7 +9,7 @@ class TextTable:
 
     def __init__(self, x, y, width, height):
         """
-        Initialize a new text table instance
+        Initialize a new TextTable instance.
 
         :param x: x position
         :param y: y position
@@ -29,7 +29,7 @@ class TextTable:
 
     def draw_table(self, screen):
         """
-        Draw the entire table to the screen. WARNING: This is slow and should only be called when necessary
+        Draw the entire table to the screen. WARNING: This is slow and should only be called when necessary.
 
         :param screen: pygame screen instance
         :return: None
@@ -51,7 +51,7 @@ class TextTable:
 
     def increment_value(self, index, increment=1):
         """
-        Increment the value of an element in the table by a certain increment (default 1)
+        Increment the value of an element in the table by a certain increment (default 1).
 
         :param index: index of the element
         :param increment: increment of value, default=1
@@ -61,7 +61,7 @@ class TextTable:
 
     def reset_value(self, index):
         """
-        set the value of an element in the table to 0
+        Set the value of an element in the table to 0.
 
         :param index: index of the element
         :return: None

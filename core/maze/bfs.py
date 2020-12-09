@@ -4,7 +4,7 @@ from queue import Queue
 class BFS:
     def __init__(self, start_idx, end_idx, size, box_height, box_width):
         """
-        Initialize BFS instance
+        Initialize BFS instance.
 
         :param start_idx: index of start tile
         :param end_idx: index of finish tile
@@ -20,20 +20,20 @@ class BFS:
 
     def get_unvisited_neighbours(self, i, maze):
         """
-        Get all the neighbours of a tile that are unvisited and not a black wall
+        Get all the neighbours of a tile that are unvisited and not a black wall.
 
         :param i: index of the current node
         :param maze: maze list
         :return: list of unvisited neighbours
         """
         neighbours = []
-        if i - self._box_width >= 0 and maze[i - self._box_width] < 1:
+        if i - self._box_width >= 0 and maze[i - self._box_width] < 1:  # north
             neighbours.append(i - self._box_width)
-        if i + self._box_width < self._size and maze[i + self._box_width] < 1:
+        if i + self._box_width < self._size and maze[i + self._box_width] < 1:  # south
             neighbours.append(i + self._box_width)
-        if i - 1 >= 0 and i % self._box_width != 0 and maze[i - 1] < 1:
+        if i - 1 >= 0 and i % self._box_width != 0 and maze[i - 1] < 1:  # west
             neighbours.append(i - 1)
-        if i + 1 < self._size and (i + 1) % self._box_width != 0 and maze[i + 1] < 1:
+        if i + 1 < self._size and (i + 1) % self._box_width != 0 and maze[i + 1] < 1:  # east
             neighbours.append(i + 1)
 
         return neighbours
@@ -51,22 +51,23 @@ class BFS:
         been visited by the other bfs queue, and thus we can terminate the bfs search.
         """
         neighbours = []
-        if i - 1 >= 0 and i % self._box_width != 0:
+
+        if i - 1 >= 0 and i % self._box_width != 0:  # west
             if maze[i - 1] < 1:
                 neighbours.append(i - 1)
             elif maze[i - 1] in (od, op):
                 return True, i - 1
-        if i + 1 < self._size and (i + 1) % self._box_width != 0:
+        if i + 1 < self._size and (i + 1) % self._box_width != 0:  # east
             if maze[i + 1] < 1:
                 neighbours.append(i + 1)
             elif maze[i + 1] in (od, op):
                 return True, i + 1
-        if i - self._box_width >= 0:
+        if i - self._box_width >= 0:  # north
             if maze[i - self._box_width] < 1:
                 neighbours.append(i - self._box_width)
             elif maze[i - self._box_width] in (od, op):
                 return True, i - self._box_width
-        if i + self._box_width < self._size:
+        if i + self._box_width < self._size:  # south
             if maze[i + self._box_width] < 1:
                 neighbours.append(i + self._box_width)
             elif maze[i + self._box_width] in (od, op):
@@ -83,9 +84,9 @@ class BFS:
         # get the adjacent, walkable tiles along with the terminate bool
         terminate, neighbours = self.get_unvisited_equal_neighbours(current, maze, od, op)
 
-        # we've discovered a tile that has already been discovered by the other bfs queue
+        # one of the neighbours has already been discovered by the other bfs queue
         if terminate:
-            # in this case, neighbours simply contain the index of the tile disscovered by the other queue
+            # in this case, neighbours contain the index of the tile discovered by the other queue
             yield True, (current, neighbours), None
 
         # iterate over the neighbours, mark them as discovered and add them to the queue
@@ -101,13 +102,19 @@ class BFS:
         yield False, current, p
 
     def bidirectional_bfs(self, maze):
+        """
+        Perform a bidirectional bfs to find the shortest path in the maze.
+
+        :param maze: maze list
+        :return: yields a tuple on the form (idx, color)
+        """
         # Create empty queues
         queue1 = Queue()
         queue2 = Queue()
 
         parents = [None for i in range(self._size)]
 
-        # compress the maze to only contain color codes (more memory efficient)
+        # compress the _maze to only contain color codes (more memory efficient)
         maze = [box[2] for box in maze]
 
         # Add start tile in queue1 and finish tile in queue2
@@ -120,7 +127,7 @@ class BFS:
         while not (queue1.empty() or queue2.empty()):
             # TODO: This section could be dried up to remove two similar iterations
 
-            # create a generator to iterate over the neighbours of queue1
+            # create a _generator to iterate over the neighbours of queue1
             gen1 = self.bfs(queue1, maze, parents, True)
             while True:
                 # get the next neighbour
@@ -155,7 +162,7 @@ class BFS:
             if idx1:
                 break
 
-        # did the paths meet?
+        # does a path between start and finish exist?
         if idx1:
 
             # assign and yield the indexes where the paths met
@@ -183,6 +190,12 @@ class BFS:
         yield self._end_idx, -2
 
     def bfs_shortest_path(self, maze):
+        """
+        Perform a bfs to find the shortest path between start and end in the maze.
+
+        :param maze: maze list
+        :return: None
+        """
         # create empty queue
         queue = Queue()
 
@@ -190,7 +203,7 @@ class BFS:
         distances = [float("inf") for i in range(self._size)]
         parents = [None for i in range(self._size)]
 
-        # compress the maze to only contain color codes (more memory efficient)
+        # compress the _maze to only contain color codes (more memory efficient)
         maze = [box[2] for box in maze]
 
         # enqueue start tile

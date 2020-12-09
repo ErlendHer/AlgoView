@@ -9,13 +9,13 @@ from gui.colors import Color
 class Slider:
     def __init__(self, x, y, width, height, slider_range, display_value=None):
         """
-        Initialize a new slider instance
+        Initialize a new Slider instance.
 
         :param x: x position of the slider
         :param y: y position of the slider
         :param width: slider width
         :param height: slider height
-        :param slider_range: tuple of __min and __max __value of slider, e.g (0.1, 6)
+        :param slider_range: tuple of min and max value of slider, e.g (0.1, 6)
         :param display_value: if you want the slider to display its value, pass the string to display. e.g 'speed'
         """
         self.__radius = height * 1.08
@@ -62,7 +62,7 @@ class Slider:
 
     def _update_value(self, x):
         """
-        Update the slider __value based on given x position.
+        Update the slider value based on given x position.
 
         :param x: x position of slider circle
         :return: None
@@ -79,9 +79,9 @@ class Slider:
 
     def _get_x_pos_by_value(self):
         """
-        Get the appropriate x position based on current __value.
+        Get the appropriate x position based on current value.
 
-        :return: correct circle position based on current slider __value
+        :return: correct circle position based on current slider value
         """
         return (self.__slider_rect.w * (self.__value - self.__min)) / self.__slider_range + self.__slider_rect.x
 
@@ -116,7 +116,7 @@ class Slider:
 
     def handle_event(self, screen, x):
         """
-        Handle the mousemotion event when the user has dragged the slider. Updates the slider __value, and x
+        Handle the mouse motion event when the user has dragged the slider. Updates the slider value, and x
         position accordingly.
 
         :param screen: pygame screen object

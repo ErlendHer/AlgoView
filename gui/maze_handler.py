@@ -32,10 +32,10 @@ def get_direction(initial_pos, new_pos):
 class MazeHandler:
     def __init__(self, screen, maze, endpoints):
         """
-        Initialize the maze handler
+        Initialize the _maze handler
         :param screen: pygame screen object
-        :param maze: maze list
-        :param endpoints: tuple containing start and end coordinates for the maze
+        :param maze: _maze list
+        :param endpoints: tuple containing start and end coordinates for the _maze
         """
         self.screen = screen
         self.maze = maze
@@ -48,21 +48,21 @@ class MazeHandler:
 
     def lock(self):
         """
-        Stop the user from being able to alter the maze
+        Stop the user from being able to alter the _maze
         :return: None
         """
         self.__locked = True
 
     def unlock(self):
         """
-        Enable the user to alter the maze
+        Enable the user to alter the _maze
         :return: None
         """
         self.__locked = False
 
     def is_locked(self):
         """
-        Check weather user altering of the maze is possible
+        Check weather user altering of the _maze is possible
         :return: true if locked false otherwise
         """
         return self.__locked
@@ -130,7 +130,7 @@ class MazeHandler:
         x, y = pos  # Final pos after mouse motion
         # dx != 0 if going west/east, dy != 0 if going north/south. oc is the original x/y coordinate.
         dx, dy, oc = original_direction
-        x, y = x - c.MAZE_LOC[0], y - c.MAZE_LOC[1]  # Offset the x and y position by the maze location
+        x, y = x - c.MAZE_LOC[0], y - c.MAZE_LOC[1]  # Offset the x and y position by the _maze location
         rx, ry = rel_pos
 
         # Invert the sign of the relative movement.
@@ -156,7 +156,7 @@ class MazeHandler:
 
     def draw_box_line(self, pos, rel_pos, color_code):
         """
-        When the user has dragged the mouse across the maze, we want to fill in a line of boxes.
+        When the user has dragged the mouse across the _maze, we want to fill in a line of boxes.
 
         :param pos: final known cursor position
         :param rel_pos: relative movement from initial cursor position
@@ -165,7 +165,7 @@ class MazeHandler:
         """
         self.draw_box_by_pos(pos, color_code)  # Draw the initial box to the screen
         x, y = pos
-        x, y = x - c.MAZE_LOC[0], y - c.MAZE_LOC[1]  # Offset the x and y position by the maze location
+        x, y = x - c.MAZE_LOC[0], y - c.MAZE_LOC[1]  # Offset the x and y position by the _maze location
         rx, ry = rel_pos
 
         # Invert the sign of the relative coordinates so we can look at x and y as the start coordinates
@@ -218,7 +218,7 @@ class MazeHandler:
 
     def remove_grey_tiles(self):
         """
-        Remove all grey and yellow tiles from the maze
+        Remove all grey and yellow tiles from the _maze
 
         :return: None
         """
@@ -228,7 +228,7 @@ class MazeHandler:
 
     def remove_all_colored_tiles(self):
         """
-        Remove all colored tiles (except start and end) from the maze)
+        Remove all colored tiles (except start and end) from the _maze)
 
         :return: None
         """
@@ -246,7 +246,7 @@ class MazeHandler:
 
     def clear_maze(self):
         """
-        Clears the entire maze, and replaces everything with white tiles.
+        Clears the entire _maze, and replaces everything with white tiles.
 
         :return: None
         """
@@ -256,7 +256,7 @@ class MazeHandler:
 
     def draw_maze(self):
         """
-        Draw the maze to the screen based on the values in the maze list.
+        Draw the _maze to the screen based on the values in the _maze list.
         :return: None
         """
         for box in self.maze:

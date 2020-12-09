@@ -1,13 +1,14 @@
 import pygame as pg
 
-from gui.colors import Color
 import gui.constants as c
+from gui.colors import Color
+
 
 class Button:
 
     def __init__(self, color, pos, width, height, text=''):
         """
-        Initialize a new button instance.
+        Initialize a new Button instance.
 
         :param color: main color of the button
         :param pos: position tuple of the button (x,y)

@@ -24,7 +24,7 @@ are not editable.
 
 You may draw lines by holding down the left/right mouse button and dragging the mouse across the screen.
 
-Press `c` to clear the maze
+Press `c` to clear the maze.
 
 Press `shift` to draw straight lines.  
 > **_NOTE:_** this works better if you place a tile first, press `shift` and then move
