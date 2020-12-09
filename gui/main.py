@@ -3,8 +3,9 @@ import pygame.freetype
 
 import gui.constants as c
 from core.event.event_handler import EventHandler
+from core.maze.a_star import AStar
 from core.maze.maze_builder import MazeBuilder
-from core.maze.bfs_shortest_path import BFS
+from core.maze.bfs import BFS
 from core.timing.tick_timing import get_time_sync_list
 from gui.colors import Color
 from gui.components.button import Button
@@ -26,6 +27,7 @@ def initialize_text_table(screen):
     indexes['random_maze'] = table.add_text_variable("random maze")
     indexes['bfs'] = table.add_text_variable("bfs")
     indexes['bi_bfs'] = table.add_text_variable("bidirectional bfs")
+    indexes['a_star'] = table.add_text_variable("A*")
     table.draw_table(screen)
 
     return table, indexes
@@ -51,6 +53,10 @@ def initialize_components(event_handler, screen):
 
     buttons.append(Button(Color.DEFAULT_BTN, (x_pos, first_row), 200, 30, "bidirectional bfs"))
     buttons[2].set_on_click(lambda: event_handler.new_bidirectional_bfs_event())
+    x_pos += 200 + 2 * c.PADX
+
+    buttons.append(Button(Color.DEFAULT_BTN, (x_pos, first_row), 50, 30, "A*"))
+    buttons[3].set_on_click(lambda: event_handler.new_a_star_event())
 
     for btn in buttons:
         btn.draw(screen)
@@ -74,9 +80,10 @@ def run(screen, clock):
     maze_handler = MazeHandler(screen, maze, maze_builder.get_endpoints())
 
     bfs = BFS(*maze_builder.export_maze())
+    a_star = AStar(*maze_builder.export_maze())
     text_table, indexes = initialize_text_table(screen)
 
-    event_handler = EventHandler(maze, maze_handler, maze_builder, bfs, indexes, text_table, screen)
+    event_handler = EventHandler(maze, maze_handler, maze_builder, bfs, a_star, indexes, text_table, screen)
     maze_handler.draw_maze()
 
     line_direction = None
@@ -101,8 +108,8 @@ def run(screen, clock):
                 if (event.key == pg.K_LSHIFT or event.key == pg.K_RSHIFT) and not initial_shift_pos:
                     pressed_keys["shift"] = True
                     initial_shift_pos = pg.mouse.get_pos()
-                if event.key == pg.K_RETURN:
-                    maze_handler.draw_maze()
+                if event.key == pg.K_c:
+                    maze_handler.clear_maze()
 
             elif event.type == pg.KEYUP:
                 if event.key == pg.K_LSHIFT or event.key == pg.K_RSHIFT:

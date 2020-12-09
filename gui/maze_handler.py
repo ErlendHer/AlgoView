@@ -244,6 +244,16 @@ class MazeHandler:
         self.maze = [[box[0], box[1], box[2]] if box[2] < 0 else [box[0], box[1], 1] for box in self.maze]
         self.draw_maze()
 
+    def clear_maze(self):
+        """
+        Clears the entire maze, and replaces everything with white tiles.
+
+        :return: None
+        """
+        if not self.is_locked():
+            self.maze = [[box[0], box[1], box[2]] if box[2] < 0 else [box[0], box[1], 0] for box in self.maze]
+            self.draw_maze()
+
     def draw_maze(self):
         """
         Draw the maze to the screen based on the values in the maze list.

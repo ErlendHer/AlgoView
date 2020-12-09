@@ -3,6 +3,15 @@ from queue import Queue
 
 class BFS:
     def __init__(self, start_idx, end_idx, size, box_height, box_width):
+        """
+        Initialize BFS instance
+
+        :param start_idx: index of start tile
+        :param end_idx: index of finish tile
+        :param size: length of the maze list
+        :param box_height: number of rows in our maze
+        :param box_width: number of columns in our maze
+        """
         self._start_idx = start_idx
         self._end_idx = end_idx
         self._size = size
@@ -18,14 +27,14 @@ class BFS:
         :return: list of unvisited neighbours
         """
         neighbours = []
-        if i - 1 >= 0 and i % self._box_width != 0 and maze[i - 1] < 1:
-            neighbours.append(i - 1)
-        if i + 1 < self._size and (i + 1) % self._box_width != 0 and maze[i + 1] < 1:
-            neighbours.append(i + 1)
         if i - self._box_width >= 0 and maze[i - self._box_width] < 1:
             neighbours.append(i - self._box_width)
         if i + self._box_width < self._size and maze[i + self._box_width] < 1:
             neighbours.append(i + self._box_width)
+        if i - 1 >= 0 and i % self._box_width != 0 and maze[i - 1] < 1:
+            neighbours.append(i - 1)
+        if i + 1 < self._size and (i + 1) % self._box_width != 0 and maze[i + 1] < 1:
+            neighbours.append(i + 1)
 
         return neighbours
 
@@ -105,14 +114,23 @@ class BFS:
         queue1.put(self._start_idx)
         queue2.put(self._end_idx)
 
+        # idx1 and idx2 will contain the indexes in the meeting point
         idx1, idx2 = None, None
 
         while not (queue1.empty() or queue2.empty()):
+            # TODO: This section could be dried up to remove two similar iterations
+
+            # create a generator to iterate over the neighbours of queue1
             gen1 = self.bfs(queue1, maze, parents, True)
             while True:
+                # get the next neighbour
                 terminate, neighbour, color = next(gen1, (None, None, None))
+
+                # we have iterated over all neighbours, break
                 if terminate is None:
                     break
+
+                # we found a common tile, exit and backtrack
                 elif terminate:
                     idx1, idx2 = neighbour
                     break
@@ -122,6 +140,7 @@ class BFS:
             if idx1:
                 break
 
+            # same procedure for queue2
             gen2 = self.bfs(queue2, maze, parents, False)
             while True:
                 terminate, neighbour, color = next(gen2, (None, None, None))
@@ -136,12 +155,17 @@ class BFS:
             if idx1:
                 break
 
+        # did the paths meet?
         if idx1:
+
+            # assign and yield the indexes where the paths met
             tile1, tile2 = idx1, idx2
             maze[tile1] = 6
             maze[tile2] = 6
             yield tile1, 6
             yield tile2, 6
+
+            # backtrack both paths
             while True:
                 if tile1 != self._start_idx:
                     tile1 = parents[tile1]
@@ -153,6 +177,7 @@ class BFS:
                     yield tile2, 6
                 if tile1 == self._start_idx and tile2 == self._end_idx:
                     break
+
         # finally, color the start and end index correctly.
         yield self._start_idx, -1
         yield self._end_idx, -2
